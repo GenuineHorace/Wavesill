@@ -8,7 +8,7 @@
 
 ## 运行
 
-1. 从 [Releases](https://github.com/GenuineHorace/Wavesill/releases) 下载与你机器架构一致的 exe：`Wavesill.exe` (x64) 或 `Wavesill-arm64.exe` (ARM64)。Windows 10 1703+ 或 Windows 11。没有安装程序，不依赖任何运行库。 (拿错也能跑，走的是模拟层；"关于"窗口的"构建"一行会告诉你当前架构。)
+1. 从 [Releases](https://github.com/GenuineHorace/Wavesill/releases) 下载与你机器架构一致的 exe：`Wavesill-x64.exe` (x64) 或 `Wavesill-arm64.exe` (ARM64)。Windows 10 1703+ 或 Windows 11。没有安装程序，不依赖任何运行库。 (拿错也能跑，走的是模拟层；"关于"窗口的"构建"一行会告诉你当前架构。)
 2. 托盘会出现一个小图标。播放任何声音，任务栏上就会出现淡淡的频谱。
 3. 右键 (或左键) 托盘图标：
 

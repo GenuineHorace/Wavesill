@@ -8,7 +8,7 @@ Wavesill turns whatever Windows is playing right now (music, video, a notificati
 
 ## Run
 
-1. Download the exe that matches your machine from [Releases](https://github.com/GenuineHorace/Wavesill/releases): `Wavesill.exe` (x64) or `Wavesill-arm64.exe` (ARM64). Windows 10 1703 or later, or Windows 11. No installer, no runtime to install. (The other one also runs, through emulation; the About window's "Build" line tells you which architecture is running.)
+1. Download the exe that matches your machine from [Releases](https://github.com/GenuineHorace/Wavesill/releases): `Wavesill-x64.exe` (x64) or `Wavesill-arm64.exe` (ARM64). Windows 10 1703 or later, or Windows 11. No installer, no runtime to install. (The other one also runs, through emulation; the About window's "Build" line tells you which architecture is running.)
 2. A tray icon appears. Play anything and a faint spectrum appears on the taskbar.
 3. Right-click (or left-click) the tray icon:
 

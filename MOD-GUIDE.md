@@ -6,7 +6,7 @@ The mod puts the spectrum *inside* the Windows 11 taskbar: beneath the Start but
 
 ## 1. Run Wavesill first
 
-Start `Wavesill.exe` (or `Wavesill-arm64.exe`), 0.6.2 or later. In the tray menu → About…, "Windhawk Mod" reads "Not detected" and every taskbar line ends with `[Overlay]`. That is the starting point.
+Start `Wavesill-x64.exe` (or `Wavesill-arm64.exe`), 0.6.2 or later. In the tray menu → About…, "Windhawk Mod" reads "Not detected" and every taskbar line ends with `[Overlay]`. That is the starting point.
 
 ## 2. Install the mod
 

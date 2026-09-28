@@ -19,14 +19,14 @@
 大约五秒内：
 
 - 原来浮在任务栏上的频谱消失，改为出现在图标后面。
-- 栏声的"关于"里，"Windhawk 模组"显示 **已连接 (v0.6.2, Protocol 1)**，"模组阶段"是 **9/9 帧已送达**，每条任务栏后面是 `[模组]`。
+- 栏声的"关于"里，"Windhawk 模组"显示 **已连接 (v0.6.3, Protocol 1)**，"模组阶段"是 **9/9 帧已送达**，每条任务栏后面是 `[模组]`。
 
 如果没有：
 
 1. 先看**模组阶段**那一行，它直接说明卡在第几步。九步依次是：XAML 已加载 → 诊断已接入 → 已订阅可视树 → 找到背景元素 → 已插入元素 → 定时器已建 → 已在跳动 → 已匹配任务栏 → 帧已送达。
 2. 打开 Windhawk 里这个模组的页面 → Advanced → Debug logging，开着日志把模组禁用再启用。正常的日志依次是：
    ```
-   Wavesill Behind Taskbar Content 0.6.2: init
+   Wavesill Behind Taskbar Content 0.6.3: init
    Bridge ready: 4 slots, ... bytes
    InitializeXamlDiagnosticsEx: 0x00000000
    AdviseVisualTreeChange: 0x00000000

@@ -19,14 +19,14 @@ Start `Wavesill.exe` (or `Wavesill-arm64.exe`), 0.6.2 or later. In the tray menu
 Within about five seconds:
 
 - The spectrum that used to float on the taskbar disappears and reappears behind the icons.
-- Wavesill's About window shows **Windhawk Mod: Connected (v0.6.2, Protocol 1)**, **Mod Stage: 9/9 Frames flowing**, and `[Mod]` on each taskbar line.
+- Wavesill's About window shows **Windhawk Mod: Connected (v0.6.3, Protocol 1)**, **Mod Stage: 9/9 Frames flowing**, and `[Mod]` on each taskbar line.
 
 If it does not:
 
 1. Read the **Mod Stage** line first; it names the last step that succeeded. The nine steps are: XAML loaded → Diagnostics attached → Tree subscribed → Background element found → Element inserted → Timer created → Ticking → Taskbar matched → Frames flowing.
 2. Open the mod's page in Windhawk → Advanced → Debug logging, then disable and re-enable the mod with the log open. A healthy run logs:
    ```
-   Wavesill Behind Taskbar Content 0.6.2: init
+   Wavesill Behind Taskbar Content 0.6.3: init
    Bridge ready: 4 slots, ... bytes
    InitializeXamlDiagnosticsEx: 0x00000000
    AdviseVisualTreeChange: 0x00000000

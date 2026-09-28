@@ -2,6 +2,16 @@
 
 Versions follow `major.minor.patch`. The Windhawk mod is released in step with Wavesill and carries the same version number. When bumping, update `src/version.h`, `src/wavesill.manifest`, the mod's `@version` / `MOD_VERSION_U32`, and this file.
 
+## v0.6.3 — 2026-09-29
+
+**Wavesill Behind Taskbar Content (Windhawk mod)**
+
+- Compiler options trimmed to the three libraries the mod links: no `-std` override (Windhawk's default standard is newer) and no `--export-all-symbols` (the two COM entry points are exported explicitly). No change in behaviour.
+
+**Wavesill**
+
+- Version number only, to stay in step with the mod.
+
 ## v0.6.2 — 2026-09-28
 
 First public release.

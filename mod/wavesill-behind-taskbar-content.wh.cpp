@@ -4,13 +4,13 @@
 // @name:zh-CN      栏声 (Wavesill) 置于任务栏内容之下
 // @description     Moves the Wavesill audio spectrum behind everything on the Windows 11 taskbar — icons, search, tray and clock — so it never covers them
 // @description:zh-CN 把栏声 (Wavesill) 的音频频谱放到 Windows 11 任务栏上所有内容 (图标、搜索、托盘、时钟) 的后面，不再遮挡它们
-// @version         0.6.2
+// @version         0.6.3
 // @author          GenuineHorace
 // @github          https://github.com/GenuineHorace
 // @include         explorer.exe
 // @architecture    x86-64
 // @architecture    arm64
-// @compilerOptions -std=c++20 -lole32 -loleaut32 -lruntimeobject -Wl,--export-all-symbols
+// @compilerOptions -lole32 -loleaut32 -lruntimeobject
 // ==/WindhawkMod==
 
 // ==WindhawkModReadme==
@@ -186,7 +186,7 @@ enum {
 static_assert(sizeof(WsBridgeHeader) == 128, "Header layout");
 static_assert(sizeof(WsBridgeSlot) == 144, "Slot layout");
 
-#define MOD_VERSION_U32 ((0u << 16) | (6u << 8) | 2u)
+#define MOD_VERSION_U32 ((0u << 16) | (6u << 8) | 3u)
 
 // {7B1C0A3E-5F2D-4E8A-9C61-2A7F3D9E4B10}: this mod's TAP class id. It is never
 // registered; XAML loads it straight from this DLL through the exported DllGetClassObject.
@@ -732,7 +732,7 @@ static DWORD WINAPI bridgeThread(LPVOID) {
 
 // --------------------------------------------------------------------------- init / uninit
 BOOL Wh_ModInit() {
-    Wh_Log(L"Wavesill Behind Taskbar Content 0.6.2: init");
+    Wh_Log(L"Wavesill Behind Taskbar Content 0.6.3: init");
     GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCWSTR)&Wh_ModInit, &g_hModule);
     // Per-session reset (see the note above the globals).
     g_unloading.store(false);

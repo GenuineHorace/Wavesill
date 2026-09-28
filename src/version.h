@@ -5,7 +5,7 @@
 
 #define WS_VER_MAJOR 0
 #define WS_VER_MINOR 6
-#define WS_VER_PATCH 2
+#define WS_VER_PATCH 3
 
 #define WS_STR2(x) #x
 #define WS_STR(x)  WS_STR2(x)

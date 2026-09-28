@@ -1,0 +1,23 @@
+# Changelog
+
+Versions follow `major.minor.patch`. The Windhawk mod is released in step with Wavesill and carries the same version number. When bumping, update `src/version.h`, `src/wavesill.manifest`, the mod's `@version` / `MOD_VERSION_U32`, and this file.
+
+## v0.6.2 — 2026-09-28
+
+First public release.
+
+**Wavesill**
+
+- WASAPI loopback capture of whatever the default output device is playing; automatic reopen on device change, unplug or Explorer restart.
+- 2048-point Hann-windowed FFT, 35 Hz–16 kHz log-spaced bands, slow automatic gain, 4 dB/octave treble tilt.
+- One per-pixel-alpha, click-through, always-on-top layer per taskbar, following the taskbar's rectangle, DPI and edge (bottom, top, left, right) every frame; hidden with an auto-hidden taskbar or behind a full-screen window; keeps the Windows 11 taskbar's top border clear.
+- Styles: Bars, Filled, Line, each with an optional fade toward the taskbar edge. Colours: Follow Theme, White, Black. Six opacity steps. Fall: Instant or Peak Hold. Per-monitor overrides.
+- Tray menu and About window follow the system theme (dark menu, Mica on Windows 11 22H2+, DirectWrite text); English and Chinese UI by system language.
+- Settings in `%LOCALAPPDATA%\Wavesill\settings.ini`; optional custom tray icons in `TrayIcons\`; only "Start with Windows" touches the registry.
+- x64 and ARM64 builds, cross-compiled with Zig; MSVC build script included.
+
+**Wavesill Behind Taskbar Content (Windhawk mod)**
+
+- Displays Wavesill's frames inside the Windows 11 taskbar, beneath the icons and above the backdrop, through the public XAML diagnostics API; no function hooks.
+- Shared-memory bridge (protocol 1) with two-way heartbeats: the overlay takes over within a second when the mod is disabled or breaks.
+- Crash guard, progress reporting ("Mod Stage" in Wavesill's About window), sleep/wake across enable cycles, an "Attach to the Taskbar" setting. x64 and ARM64.

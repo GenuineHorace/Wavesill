@@ -47,7 +47,7 @@
 - 在 Windhawk 里禁用模组：栏声的覆盖层一秒内回来，不用重启任何东西。重新启用即唤醒。
 - 移除：模组页面 → Remove。
 - 被禁用的模组 DLL 会留在 Explorer 里直到 Explorer 重启 (XAML 诊断接口不会释放它)。无害，几乎不占内存。
-- 更新：模组页面 → Advanced → Edit mod source，粘贴新文件，Compile。版本号在文件顶部的 `@version`，与栏声同步。
+- 更新：模组页面 → Advanced → Edit mod source，粘贴新文件，Compile。版本号在文件顶部的 `@version`，只在模组本身有改动时才变，不必和栏声的版本号一致。
 
 ## 6. 它到底改了什么
 

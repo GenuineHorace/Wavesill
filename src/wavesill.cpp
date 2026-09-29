@@ -151,6 +151,7 @@ constexpr int   BAR_GAP      = 1;        // px at 96 dpi
 constexpr float LINE_W       = 1.5f;     // curve width, px at 96 dpi
 constexpr float PEAK_LINE_W  = 1.0f;     // peak-hold curve width, px at 96 dpi
 constexpr float CAP_H        = 1.5f;     // peak-hold cap on bars, px at 96 dpi
+constexpr int   CURVE_SS     = 4;        // curve styles: horizontal sub-samples per pixel column
 constexpr float FADE_FLOOR   = 0.30f;    // "+ fade" styles: opacity left at the root edge (of the top)
 constexpr int   FRAME_MS     = 16;       // ~60 fps
 constexpr int   TASKBAR_SCAN_MS = 1000;  // how often to look for new/removed taskbars
@@ -768,7 +769,7 @@ static void overlayLayout(Overlay& o) {
     o.fLo.assign(o.nbands, 0.f); o.fHi.assign(o.nbands, 0.f);
     o.cur.assign(o.nbands, 0.f); o.tgt.assign(o.nbands, 0.f);
     o.pk.assign(o.nbands, 0.f); o.pkVel.assign(o.nbands, 0.f); o.pkHold.assign(o.nbands, 0.f); o.pkS.assign(o.nbands, 0.f);
-    o.env.assign(length, 0.f); o.penv.assign(length, 0.f);
+    o.env.assign((size_t)length * cfg::CURVE_SS, 0.f); o.penv.assign((size_t)length * cfg::CURVE_SS, 0.f);
     const float ratio = cfg::FREQ_MAX / cfg::FREQ_MIN;
     for (int i = 0; i < o.nbands; ++i) {
         o.fLo[i] = cfg::FREQ_MIN * powf(ratio, (float)i / o.nbands);
@@ -900,7 +901,7 @@ static inline void fillCol(Overlay& o, int x, int y0, int y1, uint32_t c) {   //
     y0 = std::max(y0, 0); y1 = std::min(y1, o.depth());
     for (int y = y0; y < y1; ++y) { uint32_t* d = pixelAt(o, x, y); if (d) *d = c; }
 }
-// Column [0, top) with opacity rising from FADE_FLOOR at the root to 1 at `top`.
+// Column [0, top) with opacity rising from FADE_FLOOR at the root to 1 at `top` (bars).
 static inline void fillColFade(Overlay& o, int x, float top, uint32_t c) {
     const int y1 = std::min((int)top, o.depth());
     for (int y = 0; y < y1; ++y) {
@@ -908,34 +909,72 @@ static inline void fillColFade(Overlay& o, int x, float top, uint32_t c) {
         uint32_t* d = pixelAt(o, x, y); if (d) *d = pmScale(c, f);
     }
 }
-// Anti-aliased curve y = env[x] with stroke width wpx; coverage computed per column.
-static void drawCurve(Overlay& o, const float* env, int length, float wpx, uint32_t c, const float* onlyAbove = nullptr, float fadeIn = 3.f) {
-    for (int x = 0; x < length; ++x) {
-        const float y0 = env[x];
-        float f = std::min(1.f, y0 / fadeIn);
-        if (onlyAbove) f *= std::min(1.f, std::max(0.f, (y0 - onlyAbove[x]) / 2.f));
-        if (f <= 0.f) continue;
-        const float yp = env[x > 0 ? x - 1 : x], yn = env[x + 1 < length ? x + 1 : x];
-        const float slope = 0.5f * (yn - yp), thick = wpx * sqrtf(1.f + slope * slope);
-        const float a = y0 - thick * 0.5f, b = y0 + thick * 0.5f;
-        for (int y = (int)floorf(a); y < (int)ceilf(b); ++y) {
-            float cov = std::min((float)y + 1, b) - std::max((float)y, a);
-            if (cov > 0.f) blendPx(o, x, y, pmScale(c, cov * f));
-        }
-    }
-}
-static void buildEnvelope(const Overlay& o, const float* v, float* out) {   // Catmull-Rom through band values → px per column
-    const int n = o.nbands, length = o.length();
+// ---- curve styles.  The envelope is sampled CURVE_SS times per pixel column (at the sub-pixel
+//      centres), and every edge pixel gets the exact vertical coverage averaged over those
+//      samples, so slopes of any steepness come out smooth.
+// Catmull-Rom through the band values → px per sub-sample; out has length() * CURVE_SS entries.
+static void buildEnvelope(const Overlay& o, const float* v, float* out) {
+    const int n = o.nbands, total = o.length() * cfg::CURVE_SS;
     const float depth = (float)o.depth();
     const float c0 = o.start + (o.pitch - o.gap) * 0.5f;
-    for (int x = 0; x < length; ++x) {
-        float u = (x - c0) / o.pitch;
+    for (int j = 0; j < total; ++j) {
+        const float u = ((j + 0.5f) / cfg::CURVE_SS - c0) / o.pitch;
         int i = (int)floorf(u); float t = u - i;
         if (i < 0) { i = 0; t = 0.f; }
         if (i >= n - 1) { i = n - 1; t = 0.f; }
         const float p0 = v[std::max(i - 1, 0)], p1 = v[i], p2 = v[std::min(i + 1, n - 1)], p3 = v[std::min(i + 2, n - 1)];
-        float y = 0.5f * ((2.f * p1) + (-p0 + p2) * t + (2.f * p0 - 5.f * p1 + 4.f * p2 - p3) * t * t + (-p0 + 3.f * p1 - 3.f * p2 + p3) * t * t * t);
-        out[x] = std::min(std::max(y, 0.f), 1.f) * depth;
+        const float y = 0.5f * ((2.f * p1) + (-p0 + p2) * t + (2.f * p0 - 5.f * p1 + 4.f * p2 - p3) * t * t + (-p0 + 3.f * p1 - 3.f * p2 + p3) * t * t * t);
+        out[j] = std::min(std::max(y, 0.f), 1.f) * depth;
+    }
+}
+// The area under the envelope; with fade, opacity rises from FADE_FLOOR at the root to 1 at the top.
+static void fillUnder(Overlay& o, const float* env, int length, uint32_t c, bool fade) {
+    constexpr int SS = cfg::CURVE_SS;
+    for (int x = 0; x < length; ++x) {
+        const float* e = env + x * SS;
+        float lo = e[0], hi = e[0], mean = 0.f;
+        for (int k = 0; k < SS; ++k) { lo = std::min(lo, e[k]); hi = std::max(hi, e[k]); mean += e[k]; }
+        mean /= SS;
+        if (hi <= 0.f) continue;
+        const int yFull = (int)floorf(lo), yEnd = std::min((int)ceilf(hi), o.depth());
+        for (int y = 0; y < yEnd; ++y) {
+            float cov = 1.f;
+            if (y >= yFull) { cov = 0.f; for (int k = 0; k < SS; ++k) cov += std::min(std::max(e[k] - y, 0.f), 1.f); cov /= SS; }
+            if (fade) cov *= std::min(1.f, cfg::FADE_FLOOR + (1.f - cfg::FADE_FLOOR) * ((y + 0.5f) / mean));
+            if (cov > 0.f) { uint32_t* d = pixelAt(o, x, y); if (d) *d = pmScale(c, cov); }
+        }
+    }
+}
+// A stroke of width wpx along the envelope.  Per sub-sample the stroke's vertical extent is
+// wpx * sqrt(1 + slope²).  fadeIn: the stroke fades out within this many px of the root;
+// onlyAbove: only drawn where it rises at least 2 px above that envelope (the peak-hold line).
+static void strokeCurve(Overlay& o, const float* env, int length, float wpx, uint32_t c, const float* onlyAbove = nullptr, float fadeIn = 3.f) {
+    constexpr int SS = cfg::CURVE_SS;
+    const int total = length * SS;
+    for (int x = 0; x < length; ++x) {
+        const float* e = env + x * SS;
+        float mean = 0.f; for (int k = 0; k < SS; ++k) mean += e[k]; mean /= SS;
+        float f = std::min(1.f, mean / fadeIn);
+        if (onlyAbove) {
+            float m2 = 0.f; for (int k = 0; k < SS; ++k) m2 += onlyAbove[x * SS + k]; m2 /= SS;
+            f *= std::min(1.f, std::max(0.f, (mean - m2) / 2.f));
+        }
+        if (f <= 0.f) continue;
+        float a[SS], b[SS], lo = 1e9f, hi = -1e9f;
+        for (int k = 0; k < SS; ++k) {
+            const int j = x * SS + k;
+            const float yp = env[j > 0 ? j - 1 : j], yn = env[j + 1 < total ? j + 1 : j];
+            const float slope = (yn - yp) * (0.5f * SS), thick = wpx * sqrtf(1.f + slope * slope);
+            a[k] = e[k] - thick * 0.5f; b[k] = e[k] + thick * 0.5f;
+            lo = std::min(lo, a[k]); hi = std::max(hi, b[k]);
+        }
+        const int yEnd = std::min(o.depth(), (int)ceilf(hi));
+        for (int y = std::max(0, (int)floorf(lo)); y < yEnd; ++y) {
+            float cov = 0.f;
+            for (int k = 0; k < SS; ++k) cov += std::max(0.f, std::min((float)y + 1, b[k]) - std::max((float)y, a[k]));
+            cov /= SS;
+            if (cov > 0.f) blendPx(o, x, y, pmScale(c, cov * f));
+        }
     }
 }
 static float bandDb(const float* db, int bins, float binHz, float fLo, float fHi) {
@@ -1032,14 +1071,12 @@ static void overlayFrame(Overlay& o, const float* db, int bins, float binHz, flo
         buildEnvelope(o, o.cur.data(), o.env.data());
         if (hold) { o.pkS = o.pk; smooth3(o.pkS, 3); buildEnvelope(o, o.pkS.data(), o.penv.data()); }
         const float lineW = cfg::LINE_W * s, peakW = cfg::PEAK_LINE_W * s;
-        if (vis.style == ST_FILLED) {
-            if (vis.fade) for (int x = 0; x < length; ++x) fillColFade(o, x, o.env[x], col);
-            else          for (int x = 0; x < length; ++x) fillCol(o, x, 0, (int)lroundf(o.env[x]), col);
-        } else {   // ST_LINE: optional fade below, then the curve itself
-            if (vis.fade) for (int x = 0; x < length; ++x) fillColFade(o, x, o.env[x], col);
-            drawCurve(o, o.env.data(), length, lineW, colLine);
+        if (vis.style == ST_FILLED) fillUnder(o, o.env.data(), length, col, vis.fade);
+        else {   // ST_LINE: optional fade below, then the curve itself
+            if (vis.fade) fillUnder(o, o.env.data(), length, col, true);
+            strokeCurve(o, o.env.data(), length, lineW, colLine);
         }
-        if (hold) drawCurve(o, o.penv.data(), length, peakW, colPeak, o.env.data());
+        if (hold) strokeCurve(o, o.penv.data(), length, peakW, colPeak, o.env.data());
     }
     o.blank = !any;
     o.dirty = true;

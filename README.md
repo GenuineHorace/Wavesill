@@ -73,7 +73,7 @@ The mod is `mod/wavesill-behind-taskbar-content.wh.cpp` and is also published in
 ## Visuals
 
 - Bands: 35 Hz to 16 kHz, log-spaced, one band per 4 px (scaled by DPI); in the Bars style each bar is 3 px wide with a 1 px gap.
-- **Bars**: the tip row is a little brighter. **Filled**: a continuous filled area. **Line**: a 1.5 px anti-aliased smooth outline. **Fade Toward the Edge**: bars, the filled area or the area below the line fade to 30 % at the taskbar edge.
+- **Bars**: the tip row is a little brighter. **Filled**: a continuous filled area. **Line**: a 1.5 px smooth outline. Both are anti-aliased: the curve is sampled four times per pixel column and edge pixels get their exact coverage. **Fade Toward the Edge**: bars, the filled area or the area below the line fade to 30 % at the taskbar edge.
 - Fast attack (30 ms), slow release (140 ms), light smoothing between neighbouring bands (twice for the curve styles).
 - **Peak Hold**: the tip holds for 0.3 s, then falls with an acceleration of 3 screen heights per s².
 - A 4 dB/octave tilt above 250 Hz, because music has far less energy in the treble; without it the right half would always be flat.

@@ -47,7 +47,7 @@ The mod carries a crash guard. It leaves a marker while asking XAML to load it a
 - Disable the mod in Windhawk: Wavesill's overlay returns within a second; nothing needs restarting. Re-enabling wakes the mod up again.
 - Remove it: mod page → Remove.
 - A disabled mod's DLL stays in Explorer until Explorer restarts (the XAML diagnostics API never releases it). This is harmless and uses almost no memory.
-- Update: mod page → Advanced → Edit mod source, paste the new file, Compile. The version is in the `@version` line at the top and is kept in step with Wavesill's.
+- Update: mod page → Advanced → Edit mod source, paste the new file, Compile. The version is in the `@version` line at the top; it changes only when the mod itself changes, so it need not match Wavesill's.
 
 ## 6. What it changes
 

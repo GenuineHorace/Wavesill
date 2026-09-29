@@ -1,6 +1,17 @@
 # Changelog
 
-Versions follow `major.minor.patch`. The Windhawk mod is released in step with Wavesill and carries the same version number. When bumping, update `src/version.h`, `src/wavesill.manifest`, the mod's `@version` / `MOD_VERSION_U32`, and this file.
+Versions follow `major.minor.patch`. The Windhawk mod has its own version number, bumped only when the mod file changes; the two sides only have to agree on the bridge protocol number (see BRIDGE.md), which the About window shows. When bumping Wavesill, update `src/version.h`, `src/wavesill.manifest` and this file; when bumping the mod, its `@version`, `MOD_VERSION_U32`, the init log line and MOD-GUIDE.
+
+## v0.6.4 — 2026-09-29
+
+**Wavesill**
+
+- Filled and Line styles: smooth edges. The curve is sampled four times per pixel column and every edge pixel gets its exact coverage, so the top of the filled area, the line and the peak-hold line no longer show steps on slopes. (The filled area had no anti-aliasing at all; the line was only anti-aliased vertically.)
+- The x64 build is now published as `Wavesill-x64.exe`, alongside `Wavesill-arm64.exe`.
+
+**Wavesill Behind Taskbar Content (Windhawk mod)**
+
+- Unchanged (0.6.3).
 
 ## v0.6.3 — 2026-09-29
 

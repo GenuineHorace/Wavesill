@@ -2,6 +2,20 @@
 
 Versions follow `major.minor.patch`. The Windhawk mod has its own version number, bumped only when the mod file changes; the two sides only have to agree on the bridge protocol number (see BRIDGE.md), which the About window shows. When bumping Wavesill, update `src/version.h`, `src/wavesill.manifest` and this file; when bumping the mod, its `@version`, `MOD_VERSION_U32`, the init log line and MOD-GUIDE.
 
+## v0.6.5 — 2026-09-29
+
+**Wavesill**
+
+- The About window's "Mod Stage" names follow the mod's new attach sequence (Symbols resolved → Taskbar thread reached → Timer created → Ticking → XAML root found → Background element found → Element inserted → Taskbar matched → Frames flowing). No other change.
+
+**Wavesill Behind Taskbar Content (Windhawk mod) — 0.7.0**
+
+- The mod no longer uses the XAML diagnostics API. It reaches each taskbar's XAML tree from the taskbar window through a few `taskbar.dll` symbols and does everything on the taskbar's thread, the way the other taskbar mods do. This removes the conflict with the Windows 11 Taskbar Styler, the crash guard, the Rendering fallback, the "Attach to the Taskbar" setting and the sleep/wake workaround: disabling the mod now takes the element out and unloads the mod completely.
+- Taskbars are paired with slots by window handle instead of by size, so mirrored monitors are never mixed up.
+- The bridge layout is kept in the mod's own variables and every frame's width, height and stride are validated in 64-bit arithmetic before a copy; malformed data from the app side can no longer crash Explorer.
+- Clean unload: no timeouts, XAML objects released on the thread that owns them, nothing written to the user profile.
+- `@architecture arm64` dropped (`x86-64` already builds ARM64 on ARM64 machines); version taken from `WH_MOD_VERSION`. Bridge protocol unchanged (1).
+
 ## v0.6.4 — 2026-09-29
 
 **Wavesill**

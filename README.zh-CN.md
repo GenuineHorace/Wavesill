@@ -66,7 +66,7 @@ TrayIcons\          自定义托盘图标 (可选)
 
 ## Windhawk 模组 (可选，Windows 11)
 
-覆盖层再怎么做也是"浮在任务栏上面"。想让频谱真正位于任务栏图标之下、亚克力背景之上，必须在 Explorer 里动手，那是 [Windhawk](https://windhawk.net) 模组的活。栏声本体永远不注入任何进程；它只是把每帧画好的图片放进一小块共享内存 (`Local\Wavesill.Bridge`)。模组在时由它在任务栏内部显示；模组不在、被禁用或被 Windows 更新弄坏时，覆盖层在一秒内自动接管。
+覆盖层再怎么做也是"浮在任务栏上面"。想让频谱真正位于任务栏图标之下、亚克力背景之上，必须在 Explorer 里动手，那是 [Windhawk](https://windhawk.net) 模组的活。模组从每条任务栏的窗口找到它的 XAML 树，在图标之下插入一个图片元素，不 hook 任何函数。栏声本体永远不注入任何进程；它只是把每帧画好的图片放进一小块共享内存 (`Local\Wavesill.Bridge`)。模组在时由它在任务栏内部显示；模组不在、被禁用或被 Windows 更新弄坏时，覆盖层在一秒内自动接管。
 
 模组是 `mod/wavesill-behind-taskbar-content.wh.cpp`，也以 **Wavesill Behind Taskbar Content** (中文名"栏声 (Wavesill) 置于任务栏内容之下") 的名字发布在 Windhawk 模组仓库。安装与排错见 **[MOD-GUIDE.zh-CN.md](MOD-GUIDE.zh-CN.md)**；两边的协议见 [BRIDGE.zh-CN.md](BRIDGE.zh-CN.md) 与 `src/wavesill_bridge.h`。仅 Windows 11，x64 与 ARM64。
 

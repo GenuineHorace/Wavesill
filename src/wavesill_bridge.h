@@ -115,18 +115,18 @@ enum { WS_SLOT_PRIMARY = 1u };
 /* header.flags: how far the mod got.  Purely informational; the app shows the highest bit
    reached in its About window so a stuck mod can be diagnosed without Windhawk's log. */
 enum {
-    WS_STAGE_XAML = 1u,        /* Taskbar.View.dll + Windows.UI.Xaml.dll present   */
-    WS_STAGE_DIAG = 2u,        /* InitializeXamlDiagnosticsEx succeeded            */
-    WS_STAGE_ADVISED = 4u,     /* AdviseVisualTreeChange succeeded                 */
-    WS_STAGE_BACKGROUND = 8u,  /* Taskbar.TaskbarBackground element seen           */
-    WS_STAGE_INSERTED = 16u,   /* the mod's Image is in the tree                   */
-    WS_STAGE_TIMER = 32u,      /* DispatcherTimer created                          */
-    WS_STAGE_TICKING = 64u,    /* first tick ran (timer or Rendering fallback)     */
+    WS_STAGE_SYMBOLS = 1u,     /* taskbar.dll symbols resolved                     */
+    WS_STAGE_THREAD = 2u,      /* the taskbar's UI thread was reached              */
+    WS_STAGE_TIMER = 4u,       /* DispatcherTimer created on that thread           */
+    WS_STAGE_TICKING = 8u,     /* first tick ran                                   */
+    WS_STAGE_ROOT = 16u,       /* a taskbar's XamlRoot was obtained                */
+    WS_STAGE_BACKGROUND = 32u, /* a Taskbar.TaskbarBackground element was found    */
+    WS_STAGE_INSERTED = 64u,   /* the mod's Image is in the tree                   */
     WS_STAGE_MATCHED = 128u,   /* a taskbar was paired with a slot                 */
     WS_STAGE_BLITTED = 256u,   /* at least one frame copied into the taskbar       */
     WS_STAGE_COUNT = 9u,
-    WS_STAGE_OFF = 0x4000u,    /* attach disabled in the mod's settings            */
-    WS_STAGE_GUARD = 0x8000u   /* attach skipped because the previous run crashed  */
+    WS_STAGE_OFF = 0x4000u,    /* mods before 0.7.0: attach disabled in settings   */
+    WS_STAGE_GUARD = 0x8000u   /* mods before 0.7.0: attach skipped after a crash  */
 };
 
 #ifdef __cplusplus
@@ -134,10 +134,9 @@ static_assert(sizeof(WsBridgeHeader) == 128, "WsBridgeHeader must stay 128 bytes
 static_assert(sizeof(WsBridgeSlot) == 144, "WsBridgeSlot must stay 144 bytes");
 #endif
 
-/* How the mod matches a slot to a taskbar it lives in: the XAML island of a taskbar
-   has the same pixel size and DPI as the taskbar window, so it compares
-   (width, height, dpi); when two taskbars are identical (mirrored monitors), the slot
-   with WS_SLOT_PRIMARY goes to the taskbar whose XAML tree was created first. */
+/* How the mod matches a slot to a taskbar: by taskbarHwnd, the window the mod reached
+   the taskbar's XAML tree through.  (Mods before 0.7.0 compared width, height and dpi
+   and used WS_SLOT_PRIMARY to tell mirrored taskbars apart.) */
 
 #pragma pack(pop)
 

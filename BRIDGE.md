@@ -7,7 +7,7 @@
 ## Roles
 
 - **Wavesill is the brain.** Capture, FFT, dynamics, styles, colours, opacity, per-monitor settings, theme: every decision is made in Wavesill, which renders one premultiplied BGRA bitmap per taskbar every frame.
-- **The mod is a dumb display.** It inserts a Composition-backed `Image` into each Windows 11 taskbar's XAML tree, beneath the icon layer and above the backdrop, and copies Wavesill's bitmaps into it. It interprets nothing.
+- **The mod is a dumb display.** It inserts an `Image` into each Windows 11 taskbar's XAML tree, beneath the icon layer and above the backdrop, and copies Wavesill's bitmaps into it. It interprets nothing.
 - Consequence: styles can change freely without touching the mod, and the protocol, which only moves pixels, almost never changes.
 
 ## Who creates, who opens
@@ -57,4 +57,8 @@ All timestamps are `GetTickCount64()` milliseconds; both processes read the same
 
 ## How the mod pairs a taskbar with a slot
 
-A taskbar's XAML island has the same pixel size and DPI as the taskbar window, so the mod compares (width, height, DPI). When two taskbars are identical (mirrored monitors), the slot flagged `WS_SLOT_PRIMARY` goes to the island whose tree was created first. With exactly one taskbar and one slot whose sizes disagree, the mod pairs them anyway and logs the sizes.
+By window handle: the mod reaches a taskbar's XAML tree through its window (`Shell_TrayWnd` or `Shell_SecondaryTrayWnd`), and Wavesill records the same handle in `slot.taskbarHwnd` when it claims a slot, so each taskbar takes exactly the slot that carries its handle. (Mods before 0.7.0 compared width, height and DPI instead and used `WS_SLOT_PRIMARY` to tell mirrored taskbars apart; the flag is still written.)
+
+## What the mod trusts
+
+The mod lays the mapping out itself and keeps that layout in its own variables; it never reads `headerSize`, `slotSize`, `slotCount`, `bufferOffset` or `bufferBytes` back from the mapping, which any process of the same user can write to. Per frame it takes one snapshot of `width`, `height`, `stride` and `front` and copies only if `stride ≥ width × 4` and `stride × (height − 1) + width × 4` fits in the buffer, in 64-bit arithmetic.

@@ -66,7 +66,7 @@ One setting has no menu item: `BorderInset`. The Windows 11 taskbar draws a 1-DI
 
 ## Windhawk mod (optional, Windows 11)
 
-An overlay can only ever float *on top of* the taskbar. To put the spectrum truly *inside* it, beneath the icons and above the acrylic backdrop, something has to run inside Explorer, and that is a job for a [Windhawk](https://windhawk.net) mod. Wavesill itself never injects into any process; it just publishes each finished frame into a small shared-memory block (`Local\Wavesill.Bridge`). When the mod is present it displays the frames inside the taskbar; when it is absent, disabled or broken by a Windows update, the overlay takes over again within a second.
+An overlay can only ever float *on top of* the taskbar. To put the spectrum truly *inside* it, beneath the icons and above the acrylic backdrop, something has to run inside Explorer, and that is a job for a [Windhawk](https://windhawk.net) mod. The mod reaches each taskbar's XAML tree from its window and inserts one image element beneath the icons; it hooks no functions. Wavesill itself never injects into any process; it just publishes each finished frame into a small shared-memory block (`Local\Wavesill.Bridge`). When the mod is present it displays the frames inside the taskbar; when it is absent, disabled or broken by a Windows update, the overlay takes over again within a second.
 
 The mod is `mod/wavesill-behind-taskbar-content.wh.cpp` and is also published in the Windhawk mod repository as **Wavesill Behind Taskbar Content**. Installation and troubleshooting: **[MOD-GUIDE.md](MOD-GUIDE.md)**. The protocol between the two: [BRIDGE.md](BRIDGE.md) and `src/wavesill_bridge.h`. Windows 11 only, x64 and ARM64.
 

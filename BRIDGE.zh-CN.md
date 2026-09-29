@@ -57,4 +57,8 @@
 
 ## 任务栏与槽的配对
 
-任务栏的 XAML 岛与任务栏窗口像素尺寸、DPI 一致，模组据此比较 (宽、高、DPI)。两条任务栏完全相同时 (镜像显示器)，带 `WS_SLOT_PRIMARY` 的槽给先出现的岛。只有一条任务栏、一个槽而尺寸不符时，模组也直接配对并记录尺寸。
+按窗口句柄：模组是从任务栏窗口 (`Shell_TrayWnd` 或 `Shell_SecondaryTrayWnd`) 找到它的 XAML 树的，栏声认领槽时把同一个句柄写进 `slot.taskbarHwnd`，于是每条任务栏正好拿到带自己句柄的那个槽。(0.7.0 之前的模组按宽、高、DPI 比较，并用 `WS_SLOT_PRIMARY` 区分镜像的任务栏；这个标志仍然会写。)
+
+## 模组信任什么
+
+映射的布局由模组自己确定并保存在自己的变量里，绝不从映射里读回 `headerSize`、`slotSize`、`slotCount`、`bufferOffset`、`bufferBytes`，因为同一用户的任何进程都能写映射。每帧只对 `width`、`height`、`stride`、`front` 取一次快照，并且只在 `stride ≥ width × 4` 且 `stride × (height − 1) + width × 4` 不超过缓冲区 (64 位算术) 时才拷贝。
